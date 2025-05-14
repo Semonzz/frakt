@@ -3,13 +3,13 @@ import matplotlib.pyplot as plt
 import random
 
 
-def diamond_square(size, R, const):
+def diamond_square(size, R):
     heightMap = np.zeros((size, size))
     
-    heightMap[0][0] = -100
-    heightMap[size-1][0] = -80
-    heightMap[0][size-1] = 100
-    heightMap[size-1][size-1] = 20
+    heightMap[0][0] = random.uniform(-100, 100)
+    heightMap[size-1][0] = random.uniform(-100, 100)
+    heightMap[0][size-1] = random.uniform(-100, 100)
+    heightMap[size-1][size-1] = random.uniform(-100, 100)
 
     chunckSize = size - 1
     iteration = 0
@@ -53,8 +53,7 @@ def plot_heightmap(heightmap, cmap='terrain'):
 
 MAP_SIZE = 513
 R = 1.2
-CONST = 2
 
-heightmap = diamond_square(MAP_SIZE, R, CONST)
+heightmap = diamond_square(MAP_SIZE, R)
 #print(heightmap)
 plot_heightmap(heightmap)
