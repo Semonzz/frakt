@@ -1,59 +1,70 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Button, Slider
 import random
-
 
 def diamond_square(size, R):
     heightMap = np.zeros((size, size))
-    
-    heightMap[0][0] = random.uniform(-100, 100)
-    heightMap[size-1][0] = random.uniform(-100, 100)
-    heightMap[0][size-1] = random.uniform(-100, 100)
-    heightMap[size-1][size-1] = random.uniform(-100, 100)
 
-    chunckSize = size - 1
+    heightMap[0][0] = random.uniform(-1, 1)
+    heightMap[size-1][0] = random.uniform(-1, 1)
+    heightMap[0][size-1] = random.uniform(-1, 1)
+    heightMap[size-1][size-1] = random.uniform(-1, 1)
+
+    chunk_size = size - 1
     iteration = 0
-    while chunckSize > 1:
+
+    while chunk_size > 1:
         iteration += 1
-        step = chunckSize // 2
+        step = chunk_size // 2
 
-        #square
-        for y in range(0, size-1, chunckSize):
-            for x in range(0, size-1, chunckSize):
-                heightMap[y + step][x + step] = (
-                    heightMap[y][x] + heightMap[y + chunckSize][x] +
-                    heightMap[y][x + chunckSize] +
-                    heightMap[y + chunckSize][x + chunckSize])/4 + random.uniform(-(R**iteration), (R**iteration))
-        
-        #diamond
-        for y in range(0, size-1, step):
-            for x in range((y + step) % chunckSize, size - 1, chunckSize):
-                cnt = 4
-                if (y - step < 0): cnt -= 1
-                if (y + step > size): cnt -= 1
-                if (x - step < 0): cnt -= 1
-                if (x + step > size): cnt -= 1
-                heightMap[y][x] = (
-                    heightMap[y][x - step] + heightMap[y - step][x] +
-                    heightMap[y + step][x] + heightMap[y][x + step])/cnt + random.uniform(-(R**iteration), (R**iteration))
-                
-        
-        chunckSize //= 2
+        # Square
+        for y in range(0, size - 1, chunk_size):
+            for x in range(0, size - 1, chunk_size):
+                avg = (heightMap[y][x] + heightMap[y + chunk_size][x] +
+                       heightMap[y][x + chunk_size] + 
+                       heightMap[y + chunk_size][x + chunk_size]) / 4
+                noise = random.uniform(-1, 1) * (R ** iteration)
+                heightMap[y + step][x + step] = avg + noise
+
+        # Diamond
+        for y in range(0, size, step):
+            for x in range((y + step) % (2 * step), size, 2 * step):
+                summ = 0
+                cnt = 0
+                if x - step >= 0:
+                    cnt += 1
+                    summ+=heightMap[y][x - step]
+                if x + step < size:
+                    cnt += 1
+                    summ+=heightMap[y][x + step]
+                if y - step >= 0:
+                    cnt += 1
+                    summ+=heightMap[y - step][x]
+                if y + step < size:
+                    cnt += 1
+                    summ+=heightMap[y + step][x]
+                if summ!=0:
+                    noise = random.uniform(-1, 1) * (R ** iteration)
+                    heightMap[y][x] = (summ / cnt) + noise
+                else:
+                    noise = random.uniform(-1, 1) * (R ** iteration)
+                    heightMap[y][x] = noise
+
+        chunk_size = step
+
     return heightMap
-
 
 def plot_heightmap(heightmap, cmap='terrain'):
     plt.figure(figsize=(9, 7))
     plt.imshow(heightmap, cmap=cmap, origin='lower')
-    plt.colorbar(label='Высота')
+    plt.colorbar(label='Height')
     plt.title("Diamond-Square Heightmap")
     plt.axis('off')
     plt.show()
 
-
-MAP_SIZE = 513
-R = 1.2
+MAP_SIZE = 257
+R = 0.7
 
 heightmap = diamond_square(MAP_SIZE, R)
-#print(heightmap)
 plot_heightmap(heightmap)
