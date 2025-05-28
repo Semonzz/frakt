@@ -7,7 +7,7 @@ import matplotlib.colors as colors
 class MandelbrotFractal:
     def __init__(self):
         self.z0 = complex(0, 0)
-        self.N = 150
+        self.N = 100
         self.R = 2.0
         self.a = 1.5
         self.width, self.height = 600, 600
